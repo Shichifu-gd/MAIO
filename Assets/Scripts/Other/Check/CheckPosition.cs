@@ -4,7 +4,7 @@ public class CheckPosition : MonoBehaviour
 {
     private Cell cell;
 
-    public bool CanGo { get; set; }
+    public bool CanGo;
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -13,7 +13,6 @@ public class CheckPosition : MonoBehaviour
             cell = collision.GetComponent<Cell>();
             CanGo = true;
         }
-        else CanGo = false;
     }
 
     public void Discharge()

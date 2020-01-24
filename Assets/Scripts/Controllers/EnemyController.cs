@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class EnemyController : MonoBehaviour
 {
@@ -6,10 +7,12 @@ public class EnemyController : MonoBehaviour
 
     private bool SkipMove;
 
+    public List<Enemy> ListEnemy { get; set; }
+
     public void EnemyAction()
     {
         //  NexEnemy();
-        SkipMove = GetWaitTime();
+        //  SkipMove = GetWaitTime();
         Step();
     }
 

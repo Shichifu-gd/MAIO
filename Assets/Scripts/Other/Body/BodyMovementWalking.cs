@@ -6,12 +6,16 @@ public class BodyMovementWalking : MonoBehaviour, IMove
     private CheckPosition currentDirection;
     private Cell CurrentCell;
 
-    private float Pace = 0.1f;
+    private float Pace = 0.5f;
 
     public bool InMove;
+    public bool Step;
     public bool MovementOnX;
     public bool MovementOnY;
     public bool MathAction;
+
+    private Vector2 DirectionCoordinate;
+    private Vector2 CurrentPosition;
 
     [SerializeField] private GameObject Directions;
     [SerializeField] private CheckPosition[] Direction = new CheckPosition[4];
@@ -71,6 +75,7 @@ public class BodyMovementWalking : MonoBehaviour, IMove
         if (InMove && currentDirection)
         {
             CurrentCell = currentDirection.GetCell();
+            DirectionCoordinate = currentDirection.transform.position;
             DeterminesWhereGo();
             CurrentCell.SetCageForWalking();
         }
@@ -89,17 +94,39 @@ public class BodyMovementWalking : MonoBehaviour, IMove
 
     public IEnumerator StartMove()
     {
-        Vector2 currentPosition = gameObject.transform.position;
-        for (int i = 0; i < 10; i++)
+        CurrentPosition = gameObject.transform.position;
+        Step = false;
+        while (!Step)
         {
-            if (MovementOnX && MathAction) currentPosition.x += Pace;
-            else if (MovementOnX && !MathAction) currentPosition.x -= Pace;
-            if (MovementOnY && MathAction) currentPosition.y += Pace;
-            else if (MovementOnY && !MathAction) currentPosition.y -= Pace;
-            Move(currentPosition);
+            if (MovementOnX) MoveOnX();
+            else if (MovementOnY) MoveOnY();
+            else Step = true;
+            Move(CurrentPosition);
             yield return new WaitForSeconds(.05f);
         }
         GiveBack();
+    }
+
+    private void MoveOnX()
+    {
+        if (MathAction && CurrentPosition.x < DirectionCoordinate.x) CurrentPosition.x += Pace;
+        else if (!MathAction && CurrentPosition.x > DirectionCoordinate.x) CurrentPosition.x -= Pace;
+        else
+        {
+            Step = true;
+            CurrentPosition = DirectionCoordinate;
+        }
+    }
+
+    private void MoveOnY()
+    {
+        if (MathAction && CurrentPosition.y < DirectionCoordinate.y) CurrentPosition.y += Pace;
+        else if (!MathAction && CurrentPosition.y > DirectionCoordinate.y) CurrentPosition.y -= Pace;
+        else
+        {
+            Step = true;
+            CurrentPosition = DirectionCoordinate;
+        }
     }
 
     public void Move(Vector2 direction)
