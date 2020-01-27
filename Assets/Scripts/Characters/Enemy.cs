@@ -4,6 +4,7 @@ using UnityEngine;
 public class Enemy : MonoBehaviour, ICharacteristic, ITakeDamage
 {
     private BodyMovementWalking bodyMovementWalking;
+    private PathFinder pathFinder;
 
     public int Health { get; set; }
     public int Attack { get; set; }
@@ -14,11 +15,13 @@ public class Enemy : MonoBehaviour, ICharacteristic, ITakeDamage
     [SerializeField]
     private CircleCollider2D RangZoneAggression;
 
-    private List<Transform> WayToGoal;
+    private List<Transform> WayToGoal = new List<Transform>();
+    private List<Vector2> WayToTarget = new List<Vector2>();
 
     private void Awake()
     {
         bodyMovementWalking = GetComponent<BodyMovementWalking>();
+        pathFinder = GetComponent<PathFinder>();
     }
 
     public void SetTarget(Transform newTarget)
@@ -38,17 +41,13 @@ public class Enemy : MonoBehaviour, ICharacteristic, ITakeDamage
         }
         else
         {
-            WorkingOutWay();
+            CalculateWay();
         }
     }
 
-    private void WorkingOutWay() //fixme
+    private void CalculateWay()
     {
-        Vector2 enemyVector = gameObject.transform.position;
-        Vector2 heroVector = CurrentTarget.position;
-        float x = heroVector.x - enemyVector.x;
-        float y = heroVector.y - enemyVector.y;
-        Debug.Log($"x| {x} , y| {y}");
+        WayToTarget = pathFinder.GetPath(CurrentTarget);
     }
 
     public void TakeDamage(int damage)

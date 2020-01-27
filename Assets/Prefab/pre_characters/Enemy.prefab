@@ -70,6 +70,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5978b89d1f6b2084c976228ac07c13b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  CanGo: 0
 --- !u!1 &1098799724699311940
 GameObject:
   m_ObjectHideFlags: 0
@@ -140,6 +141,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5978b89d1f6b2084c976228ac07c13b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  CanGo: 0
 --- !u!1 &1098799725229521828
 GameObject:
   m_ObjectHideFlags: 0
@@ -187,6 +189,7 @@ GameObject:
   - component: {fileID: 1098799725299330322}
   - component: {fileID: 1098799725299330323}
   - component: {fileID: 1098799725299330320}
+  - component: {fileID: 1098799725773332135}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Untagged
@@ -271,7 +274,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CurrentTarget: {fileID: 0}
-  Rang: {fileID: 0}
+  RangZoneAggression: {fileID: 7927486798787731841}
 --- !u!114 &1098799725299330320
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -285,6 +288,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   InMove: 0
+  Step: 0
   MovementOnX: 0
   MovementOnY: 0
   MathAction: 0
@@ -294,6 +298,25 @@ MonoBehaviour:
   - {fileID: 1098799725854717068}
   - {fileID: 1098799725902495061}
   - {fileID: 1098799724699311942}
+--- !u!114 &1098799725773332135
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1098799725299330326}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b5bac8164857d94b8df498b4c8247c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Target: {fileID: 0}
+  Barriers:
+    serializedVersion: 2
+    m_Bits: 0
+  Cell:
+    serializedVersion: 2
+    m_Bits: 256
 --- !u!1 &1098799725414885031
 GameObject:
   m_ObjectHideFlags: 0
@@ -445,6 +468,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5978b89d1f6b2084c976228ac07c13b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  CanGo: 0
 --- !u!1 &1098799725902495051
 GameObject:
   m_ObjectHideFlags: 0
@@ -515,6 +539,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5978b89d1f6b2084c976228ac07c13b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  CanGo: 0
 --- !u!1001 &4229228335857595006
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -582,11 +607,22 @@ PrefabInstance:
       propertyPath: m_Name
       value: ZoneAggression
       objectReference: {fileID: 0}
+    - target: {fileID: 6103833241831707647, guid: 3b0175d17b69446459c7474997f8eba2,
+        type: 3}
+      propertyPath: m_Radius
+      value: 8
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3b0175d17b69446459c7474997f8eba2, type: 3}
 --- !u!4 &7927486798787731855 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6103833241831707633, guid: 3b0175d17b69446459c7474997f8eba2,
+    type: 3}
+  m_PrefabInstance: {fileID: 4229228335857595006}
+  m_PrefabAsset: {fileID: 0}
+--- !u!58 &7927486798787731841 stripped
+CircleCollider2D:
+  m_CorrespondingSourceObject: {fileID: 6103833241831707647, guid: 3b0175d17b69446459c7474997f8eba2,
     type: 3}
   m_PrefabInstance: {fileID: 4229228335857595006}
   m_PrefabAsset: {fileID: 0}
