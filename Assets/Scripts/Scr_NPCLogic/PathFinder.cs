@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PathFinder : MonoBehaviour
 {
-    public Transform Target;
+    private Transform Target;
 
     public LayerMask Barriers;
     public LayerMask Cell;
@@ -12,11 +12,6 @@ public class PathFinder : MonoBehaviour
     private List<Vector2> PathToTarget = new List<Vector2>();
     private List<Node> CheckedNodes = new List<Node>();
     private List<Node> WaitingNodes = new List<Node>();
-
-    private void Start()
-    {
-        //  PathToTarget = GetPath(Target);
-    }
 
     public List<Vector2> GetPath(Transform target)
     {
@@ -31,7 +26,12 @@ public class PathFinder : MonoBehaviour
         while (WaitingNodes.Count > 0)
         {
             Node nodeToCheck = WaitingNodes.Where(x => x.Cost == WaitingNodes.Min(y => y.Cost)).FirstOrDefault();
-            if (nodeToCheck.CurrentPosition == targetPosition) return CalculatePathFromNode(nodeToCheck);
+            if (nodeToCheck.CurrentPosition == targetPosition)
+            {
+                // TODO: при завершении тестов, заменить возврат и убрать OnDrawGizmos.
+                PathToTarget = CalculatePathFromNode(nodeToCheck);
+                return PathToTarget;
+            }
             var cell = Physics2D.OverlapCircle(nodeToCheck.CurrentPosition, 0.1f, Cell);
             if (cell)
             {

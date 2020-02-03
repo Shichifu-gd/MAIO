@@ -1,6 +1,14 @@
 ﻿using System.Collections;
 using UnityEngine;
 
+public enum DirectionTravel
+{
+    North,
+    South,
+    East,
+    West,
+}
+
 public class BodyMovementWalking : MonoBehaviour, IMove
 {
     private CheckPosition currentDirection;
@@ -17,7 +25,7 @@ public class BodyMovementWalking : MonoBehaviour, IMove
     private Vector2 DirectionCoordinate;
     private Vector2 CurrentPosition;
 
-    [SerializeField] private GameObject Directions;
+    public GameObject Directions;
     [SerializeField] private CheckPosition[] Direction = new CheckPosition[4];
 
     public void StepNorth()
@@ -79,7 +87,7 @@ public class BodyMovementWalking : MonoBehaviour, IMove
             DeterminesWhereGo();
             CurrentCell.SetCageForWalking();
         }
-        else GiveBack();
+        else ResetElements();
     }
 
     public void DeterminesWhereGo()
@@ -87,9 +95,9 @@ public class BodyMovementWalking : MonoBehaviour, IMove
         if (currentDirection)
         {
             if (currentDirection.CanGo == true) StartCoroutine(StartMove());
-            else GiveBack();
+            else ResetElements();
         }
-        else GiveBack();
+        else ResetElements();
     }
 
     public IEnumerator StartMove()
@@ -104,7 +112,7 @@ public class BodyMovementWalking : MonoBehaviour, IMove
             Move(CurrentPosition);
             yield return new WaitForSeconds(.05f);
         }
-        GiveBack();
+        ResetElements();
     }
 
     private void MoveOnX()
@@ -134,7 +142,7 @@ public class BodyMovementWalking : MonoBehaviour, IMove
         transform.position = direction;
     }
 
-    public void GiveBack()
+    public void ResetElements()
     {
         foreach (var item in Direction)
         {

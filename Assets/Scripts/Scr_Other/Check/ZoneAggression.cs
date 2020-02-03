@@ -11,10 +11,10 @@ public class ZoneAggression : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.GetComponent<Hero>()) NewTarget(collision.transform);
+        if (collision.GetComponent<Hero>()) NewTarget(collision.GetComponent<Hero>());
     }
 
-    private void NewTarget(Transform newTarget)
+    private void NewTarget(Hero newTarget)
     {
         enemy.SetTarget(newTarget);
     }
