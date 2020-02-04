@@ -11,11 +11,12 @@ public class CheckPosition : MonoBehaviour
         if (collision.GetComponent<Cell>())
         {
             cell = collision.GetComponent<Cell>();
-            CanGo = true;
+            if (cell.CageForWalking) CanGo = true;
+           // else Debug.Log("The cell is busy");
         }
     }
 
-    public void Discharge()
+    public void ResetCanGo()
     {
         CanGo = false;
     }

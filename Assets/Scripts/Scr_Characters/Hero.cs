@@ -1,10 +1,13 @@
-﻿using UnityEngine.UI;
+﻿using System.Collections;
+using UnityEngine.UI;
 using UnityEngine;
 
 public class Hero : MonoBehaviour, ICharacteristic, ITakeDamage
 {
     private BodyMovementWalking bodyMovementWalking;
     public GameController gameController;
+
+    private DirectionTravel DirectionTravel_player;
 
     public Image ImageCurrentHealth;
 
@@ -13,11 +16,13 @@ public class Hero : MonoBehaviour, ICharacteristic, ITakeDamage
     public int Attack { get; set; }
 
     private bool Immortality;
+    private bool PlayerMove = true;
+    private bool EndAction;
 
     private void Awake()
     {
         bodyMovementWalking = GetComponent<BodyMovementWalking>();
-        PlayerController.SwipeEvent += DetermineDirectionWalking;
+        PlayerController.SwipeEvent += OnAction;
     }
 
     public void Start()
@@ -27,28 +32,34 @@ public class Hero : MonoBehaviour, ICharacteristic, ITakeDamage
         Attack = 15;
     }
 
-    private void DetermineDirectionWalking(DirectionTravel type)
+    private void OnAction(DirectionTravel type)
     {
-        if (type == DirectionTravel.North)
+        DirectionTravel_player = type;
+        StartCoroutine(DetermineAction());
+    }
+
+    private IEnumerator DetermineAction()
+    {
+        bool move = true;
+        OnUpdateDirections();
+        yield return new WaitForSeconds(0.2f);
+        PlayerMove = gameController.SetPlayerMove();
+        if (PlayerMove)
         {
-            bodyMovementWalking.StepNorth();
-            gameController.EndAction();
+            if (DirectionTravel_player == DirectionTravel.North) move = bodyMovementWalking.StepNorth();
+            if (DirectionTravel_player == DirectionTravel.South) move = bodyMovementWalking.StepSouth();
+            if (DirectionTravel_player == DirectionTravel.East) move = bodyMovementWalking.StepEast();
+            if (DirectionTravel_player == DirectionTravel.West) move = bodyMovementWalking.StepWest();
+            if (!move) AttackPlayer();
+            StartCoroutine(WaitingForEndOfAction());
         }
-        if (type == DirectionTravel.South)
-        {
-            bodyMovementWalking.StepSouth();
-            gameController.EndAction();
-        }
-        if (type == DirectionTravel.East)
-        {
-            bodyMovementWalking.StepEast();
-            gameController.EndAction();
-        }
-        if (type == DirectionTravel.West)
-        {
-            bodyMovementWalking.StepWest();
-            gameController.EndAction();
-        }
+    }
+
+    private IEnumerator WaitingForEndOfAction()
+    {
+        gameController.EndAction();
+        yield return new WaitForSeconds(1f);
+        PlayerMove = false;
     }
 
     public void TakeDamage(int damage)
@@ -61,6 +72,16 @@ public class Hero : MonoBehaviour, ICharacteristic, ITakeDamage
             ImageCurrentHealth.fillAmount = num / MaxHealth;
         }
         else Debug.Log("haha, i am invincible");
+    }
+
+    public void OnUpdateDirections()
+    {
+        StartCoroutine(bodyMovementWalking.UpdateDirections());
+    }
+
+    public void AttackPlayer()
+    {
+        // Debug.Log("atack");
     }
 
     public void HasDied()

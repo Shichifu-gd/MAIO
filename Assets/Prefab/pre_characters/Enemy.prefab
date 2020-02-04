@@ -273,8 +273,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c79d90de5e85d49419fe9cbc4260f9ae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  enemyController: {fileID: 0}
   CurrentTarget: {fileID: 0}
   RangZoneAggression: {fileID: 7927486798787731841}
+  WayToTarget: []
 --- !u!114 &1098799725299330320
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -287,6 +289,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b9935dfd8f8eefa4ea9628ea6e3b34b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ThisPerson: 1
   InMove: 0
   Step: 0
   MovementOnX: 0
@@ -310,7 +313,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b5bac8164857d94b8df498b4c8247c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Target: {fileID: 0}
   Barriers:
     serializedVersion: 2
     m_Bits: 0
@@ -610,7 +612,7 @@ PrefabInstance:
     - target: {fileID: 6103833241831707647, guid: 3b0175d17b69446459c7474997f8eba2,
         type: 3}
       propertyPath: m_Radius
-      value: 8
+      value: 15
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3b0175d17b69446459c7474997f8eba2, type: 3}

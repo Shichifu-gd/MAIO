@@ -9,10 +9,20 @@ public enum DirectionTravel
     West,
 }
 
+public enum Person
+{
+    Player,
+    Opponent,
+    Companion,
+    None,
+}
+
 public class BodyMovementWalking : MonoBehaviour, IMove
 {
     private CheckPosition currentDirection;
     private Cell CurrentCell;
+
+    public Person ThisPerson;
 
     private float Pace = 0.5f;
 
@@ -28,71 +38,102 @@ public class BodyMovementWalking : MonoBehaviour, IMove
     public GameObject Directions;
     [SerializeField] private CheckPosition[] Direction = new CheckPosition[4];
 
-    public void StepNorth()
+    public bool StepNorth()
     {
         InMove = true;
-        if (CurrentCell) CurrentCell.SetDefaultCageForWalking();
         currentDirection = MotionCheck(0);
-        MathAction = true;
-        MovementOnY = true;
-        CheckOpportunityTakeStep();
+        if (InMove)
+        {
+            MathAction = true;
+            MovementOnY = true;
+            CheckOpportunityTakeStep();
+        }
+        return InMove;
     }
 
-    public void StepSouth()
+    public bool StepSouth()
     {
         InMove = true;
-        if (CurrentCell) CurrentCell.SetDefaultCageForWalking();
         currentDirection = MotionCheck(1);
-        MathAction = false;
-        MovementOnY = true;
-        CheckOpportunityTakeStep();
+        if (InMove)
+        {
+            MathAction = false;
+            MovementOnY = true;
+            CheckOpportunityTakeStep();
+        }
+        return InMove;
     }
 
-    public void StepEast()
+    public bool StepEast()
     {
         InMove = true;
-        if (CurrentCell) CurrentCell.SetDefaultCageForWalking();
         currentDirection = MotionCheck(2);
-        MathAction = true;
-        MovementOnX = true;
-        CheckOpportunityTakeStep();
+        if (InMove)
+        {
+            MathAction = true;
+            MovementOnX = true;
+            CheckOpportunityTakeStep();
+        }
+        return InMove;
     }
 
-    public void StepWest()
+    public bool StepWest()
     {
         InMove = true;
-        if (CurrentCell) CurrentCell.SetDefaultCageForWalking();
         currentDirection = MotionCheck(3);
-        MathAction = false;
-        MovementOnX = true;
-        CheckOpportunityTakeStep();
+        if (InMove)
+        {
+            MathAction = false;
+            MovementOnX = true;
+            CheckOpportunityTakeStep();
+        }
+        return InMove;
     }
 
     private CheckPosition MotionCheck(int index)
     {
         if (Direction[index].CanGo == true)
         {
+            if (CurrentCell != null)
+            {
+                CurrentCell.SetDefaultValueForWalking();
+                CurrentCell.SetWhoIsThere(Person.None);
+            }
             return Direction[index];
         }
-        else return null;
+        else
+        {
+            var newCell = Direction[index].GetCell();
+            if (ThisPerson == Person.Player && newCell.WhoIsThere == Person.Opponent) InMove = false;
+            if (ThisPerson == Person.Opponent && newCell.WhoIsThere == Person.Player) InMove = false;
+            return currentDirection;
+        }
+    }
+
+    public IEnumerator UpdateDirections()
+    {
+        Directions.SetActive(false);
+        OnResetCanGo();
+        yield return new WaitForSeconds(.1f);
     }
 
     private void CheckOpportunityTakeStep()
     {
         Directions.SetActive(false);
-        if (InMove && currentDirection)
+        if (InMove && currentDirection != null)
         {
             CurrentCell = currentDirection.GetCell();
             DirectionCoordinate = currentDirection.transform.position;
             DeterminesWhereGo();
-            CurrentCell.SetCageForWalking();
+            CurrentCell.OccupyCage();
+            CurrentCell.SetWhoIsThere(ThisPerson);
         }
         else ResetElements();
     }
 
     public void DeterminesWhereGo()
     {
-        if (currentDirection)
+        if (currentDirection != null)
         {
             if (currentDirection.CanGo == true) StartCoroutine(StartMove());
             else ResetElements();
@@ -144,14 +185,18 @@ public class BodyMovementWalking : MonoBehaviour, IMove
 
     public void ResetElements()
     {
-        foreach (var item in Direction)
-        {
-            item.Discharge();
-        }
-        Directions.SetActive(true);
+        OnResetCanGo();
         currentDirection = null;
         MovementOnX = false;
         MovementOnY = false;
-        InMove = false;
+    }
+
+    private void OnResetCanGo()
+    {
+        foreach (var item in Direction)
+        {
+            item.ResetCanGo();
+        }
+        Directions.SetActive(true);
     }
 }

@@ -229,7 +229,7 @@ GameObject:
   - component: {fileID: 588780235}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 3443629218296621865, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -296,6 +296,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameController: {fileID: 0}
+  ImageCurrentHealth: {fileID: 0}
 --- !u!114 &6298781238938579682
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -308,6 +309,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b9935dfd8f8eefa4ea9628ea6e3b34b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ThisPerson: 0
   InMove: 0
   Step: 0
   MovementOnX: 0

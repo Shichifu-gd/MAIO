@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
+using System.Collections;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour, ICharacteristic, ITakeDamage
 {
     private BodyMovementWalking bodyMovementWalking;
     private PathFinder pathFinder;
+    public EnemyController enemyController;
 
     private DirectionTravel DirectionTravel_enemy;
 
@@ -13,10 +15,13 @@ public class Enemy : MonoBehaviour, ICharacteristic, ITakeDamage
     private int MaxHealth;
     private int Index;
 
+    private float Range;
+
     private bool InMove;
+    private bool InAction;
     public bool InAggression { get; set; }
 
-    public Hero CurrentTarget;
+    public Hero CurrentTarget { get; set; }
     [SerializeField]
     private CircleCollider2D RangZoneAggression;
 
@@ -30,9 +35,12 @@ public class Enemy : MonoBehaviour, ICharacteristic, ITakeDamage
 
     private void Start()
     {
+        Range = 8;
+        RangZoneAggression.radius = Range;
         Health = 100;
         MaxHealth = Health;
         Attack = Random.Range(5, 10);
+        enemyController.RegisterEnemy(this);
     }
 
     public void SetTarget(Hero newTarget)
@@ -40,8 +48,12 @@ public class Enemy : MonoBehaviour, ICharacteristic, ITakeDamage
         CurrentTarget = newTarget;
     }
 
-    public void DetermineDirectionMovement()
+    public IEnumerator DetermineDirectionMovement()
     {
+        enemyController.EnemyActionCompleted = false;
+        InAction = true;
+        OnUpdateDirections();
+        yield return new WaitForSeconds(.2f);
         if (CurrentTarget == null)
         {
             int index = Random.Range(0, 4);
@@ -55,7 +67,7 @@ public class Enemy : MonoBehaviour, ICharacteristic, ITakeDamage
         {
             SearchPath();
             //TODO: исправить атаку !!
-            if (WayToTarget.Count > 1)
+            if (WayToTarget.Count > 0)
             {
                 Index = WayToTarget.Count - 1;
                 if (WayToTarget[Index].x < gameObject.transform.position.x ||
@@ -63,9 +75,10 @@ public class Enemy : MonoBehaviour, ICharacteristic, ITakeDamage
                 else DirectionTravel_enemy = WayToTarget[Index].y > gameObject.transform.position.y ? DirectionTravel.North : DirectionTravel.South;
                 InMove = true;
             }
-            else EnemyAttack();
         }
         if (InMove) EnemyMove();
+        InAction = false;
+        enemyController.EnemyActionCompleted = true;
     }
 
     private void SearchPath()
@@ -75,11 +88,18 @@ public class Enemy : MonoBehaviour, ICharacteristic, ITakeDamage
 
     private void EnemyMove()
     {
-        if (DirectionTravel_enemy == DirectionTravel.North) bodyMovementWalking.StepNorth();
-        if (DirectionTravel_enemy == DirectionTravel.South) bodyMovementWalking.StepSouth();
-        if (DirectionTravel_enemy == DirectionTravel.East) bodyMovementWalking.StepEast();
-        if (DirectionTravel_enemy == DirectionTravel.West) bodyMovementWalking.StepWest();
+        bool move = true;
+        if (DirectionTravel_enemy == DirectionTravel.North) move = bodyMovementWalking.StepNorth();
+        if (DirectionTravel_enemy == DirectionTravel.South) move = bodyMovementWalking.StepSouth();
+        if (DirectionTravel_enemy == DirectionTravel.East) move = bodyMovementWalking.StepEast();
+        if (DirectionTravel_enemy == DirectionTravel.West) move = bodyMovementWalking.StepWest();
+        if (!move) EnemyAttack();
         InMove = false;
+    }
+
+    public void OnUpdateDirections()
+    {
+        StartCoroutine(bodyMovementWalking.UpdateDirections());
     }
 
     public void TakeDamage(int damage)
@@ -91,6 +111,11 @@ public class Enemy : MonoBehaviour, ICharacteristic, ITakeDamage
     private void EnemyAttack()
     {
         if (CurrentTarget != null) CurrentTarget.TakeDamage(Attack);
+    }
+
+    public bool SetNextActionEnemies()
+    {
+        return InAction;
     }
 
     public void HasDied()
