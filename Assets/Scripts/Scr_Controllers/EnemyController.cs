@@ -5,10 +5,10 @@ public class EnemyController : MonoBehaviour
 {
     private Enemy CurrentEnemy;
 
-    private bool SkipMove;
-    public bool EnemyActionCompleted { get; set; } = true;
     private bool Skip;
+    private bool SkipMove;
     private bool NextActionEnemies;
+    public bool EnemyActionCompleted { get; set; } = true;
 
     public List<Enemy> ListEnemy;
 
@@ -63,7 +63,7 @@ public class EnemyController : MonoBehaviour
         {
             if (CurrentEnemy.CurrentTarget == null)
             {
-                int random = Random.Range(0, 2);
+                int random = Random.Range(0, 5);
                 if (random == 0) return true;
                 else return false;
             }

@@ -15,7 +15,7 @@ public class Hero : MonoBehaviour, ICharacteristic, ITakeDamage
     public int Health { get; set; }
     public int Attack { get; set; }
 
-    private bool Immortality;
+    private bool Immortality = false;
     private bool PlayerMove = true;
     private bool EndAction;
 

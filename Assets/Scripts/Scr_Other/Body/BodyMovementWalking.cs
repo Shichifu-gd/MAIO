@@ -104,8 +104,12 @@ public class BodyMovementWalking : MonoBehaviour, IMove
         else
         {
             var newCell = Direction[index].GetCell();
-            if (ThisPerson == Person.Player && newCell.WhoIsThere == Person.Opponent) InMove = false;
-            if (ThisPerson == Person.Opponent && newCell.WhoIsThere == Person.Player) InMove = false;
+            if (newCell != null)
+            {
+                if (ThisPerson == Person.Player && newCell.WhoIsThere == Person.Opponent) InMove = false;
+                if (ThisPerson == Person.Opponent && newCell.WhoIsThere == Person.Player) InMove = false;
+            }
+            else InMove = false;
             return currentDirection;
         }
     }

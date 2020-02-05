@@ -4,9 +4,12 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour, ICharacteristic, ITakeDamage
 {
-    private BodyMovementWalking bodyMovementWalking;
     private PathFinder pathFinder;
+    private BodyMovementWalking bodyMovementWalking;
     public EnemyController enemyController;
+    public EnemyBaseZone PersonTerritory;
+
+    public Hero CurrentTarget { get; set; }
 
     private DirectionTravel DirectionTravel_enemy;
 
@@ -17,11 +20,14 @@ public class Enemy : MonoBehaviour, ICharacteristic, ITakeDamage
 
     private float Range;
 
+    private bool Search;
     private bool InMove;
     private bool InAction;
     public bool InAggression { get; set; }
+    private bool TargetInZone;
 
-    public Hero CurrentTarget { get; set; }
+    private Vector2 PastPosition;
+
     [SerializeField]
     private CircleCollider2D RangZoneAggression;
 
@@ -35,7 +41,8 @@ public class Enemy : MonoBehaviour, ICharacteristic, ITakeDamage
 
     private void Start()
     {
-        Range = 8;
+        ResetPastPosition();
+        Range = 3;
         RangZoneAggression.radius = Range;
         Health = 100;
         MaxHealth = Health;
@@ -54,36 +61,74 @@ public class Enemy : MonoBehaviour, ICharacteristic, ITakeDamage
         InAction = true;
         OnUpdateDirections();
         yield return new WaitForSeconds(.2f);
-        if (CurrentTarget == null)
-        {
-            int index = Random.Range(0, 4);
-            if (index == 0) DirectionTravel_enemy = DirectionTravel.North;
-            if (index == 1) DirectionTravel_enemy = DirectionTravel.South;
-            if (index == 2) DirectionTravel_enemy = DirectionTravel.East;
-            if (index == 3) DirectionTravel_enemy = DirectionTravel.West;
-            InMove = true;
-        }
-        else
-        {
-            SearchPath();
-            //TODO: исправить атаку !!
-            if (WayToTarget.Count > 0)
-            {
-                Index = WayToTarget.Count - 1;
-                if (WayToTarget[Index].x < gameObject.transform.position.x ||
-                    WayToTarget[Index].x > gameObject.transform.position.x) DirectionTravel_enemy = WayToTarget[Index].x < gameObject.transform.position.x ? DirectionTravel.West : DirectionTravel.East;
-                else DirectionTravel_enemy = WayToTarget[Index].y > gameObject.transform.position.y ? DirectionTravel.North : DirectionTravel.South;
-                InMove = true;
-            }
-        }
+        if (CurrentTarget == null) OrdinaryMovement();
+        else MovementTowardsTarget();
         if (InMove) EnemyMove();
         InAction = false;
         enemyController.EnemyActionCompleted = true;
     }
 
-    private void SearchPath()
+    private void OrdinaryMovement()
     {
-        WayToTarget = pathFinder.GetPath(CurrentTarget.transform);
+        Vector2 newTarget;
+        if (!TargetInZone) newTarget = PersonTerritory.GetPoint();
+        else newTarget = PastPosition;
+        Search = TargetMovementCheck(newTarget);
+        if (Search)
+        {
+            TargetInZone = true;
+            SearchPath(newTarget);
+            PastPosition = newTarget;
+            Index = WayToTarget.Count - 1;
+        }
+        else Index--;
+        if (WayToTarget.Count > 0 && Index >= 0) DeterminationDirection();
+        else
+        {
+            //TODO: Заменить скип на продолжение пути
+            ResetPastPosition();
+            TargetInZone = false;
+        }
+    }
+
+    private void MovementTowardsTarget()
+    {
+        Search = TargetMovementCheck(CurrentTarget.transform.position);
+        if (Search)
+        {
+            TargetInZone = false;
+            SearchPath(CurrentTarget.transform.position);
+            Index = WayToTarget.Count - 1;
+        }
+        else Index--;
+        if (WayToTarget.Count > 0 && Index >= 0) DeterminationDirection();
+    }
+
+    private bool TargetMovementCheck(Vector2 currentPosition)
+    {
+        if (PastPosition != currentPosition)
+        {
+            PastPosition = currentPosition;
+            return true;
+        }
+        else
+        {
+            PastPosition = currentPosition;
+            return false;
+        }
+    }
+
+    private void SearchPath(Vector2 position)
+    {
+        WayToTarget = pathFinder.GetPath(position);
+    }
+
+    private void DeterminationDirection()
+    {
+        if (WayToTarget[Index].x < gameObject.transform.position.x ||
+            WayToTarget[Index].x > gameObject.transform.position.x) DirectionTravel_enemy = WayToTarget[Index].x < gameObject.transform.position.x ? DirectionTravel.West : DirectionTravel.East;
+        else DirectionTravel_enemy = WayToTarget[Index].y > gameObject.transform.position.y ? DirectionTravel.North : DirectionTravel.South;
+        InMove = true;
     }
 
     private void EnemyMove()
@@ -116,6 +161,11 @@ public class Enemy : MonoBehaviour, ICharacteristic, ITakeDamage
     public bool SetNextActionEnemies()
     {
         return InAction;
+    }
+
+    private void ResetPastPosition()
+    {
+        PastPosition = new Vector2(9.404f, 9.404f);
     }
 
     public void HasDied()

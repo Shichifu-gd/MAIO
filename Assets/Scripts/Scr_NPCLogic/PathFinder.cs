@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PathFinder : MonoBehaviour
 {
-    private Transform Target;
+    private Vector2 Target;
 
     public LayerMask Barriers;
     public LayerMask Cell;
@@ -13,12 +13,12 @@ public class PathFinder : MonoBehaviour
     private List<Node> CheckedNodes = new List<Node>();
     private List<Node> WaitingNodes = new List<Node>();
 
-    public List<Vector2> GetPath(Transform target)
+    public List<Vector2> GetPath(Vector2 target)
     {
         Target = target;
         NullifyLists();
         Vector2 startPosition = new Vector2(Mathf.Round(transform.position.x), Mathf.Round(transform.position.y));
-        Vector2 targetPosition = new Vector2(Mathf.Round(Target.transform.position.x), Mathf.Round(Target.transform.position.y));
+        Vector2 targetPosition = new Vector2(Mathf.Round(Target.x), Mathf.Round(Target.y));
         if (startPosition == targetPosition) return PathToTarget;
         Node startNode = new Node(0, startPosition, targetPosition, null);
         CheckedNodes.Add(startNode);

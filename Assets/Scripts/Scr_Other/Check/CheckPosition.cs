@@ -12,13 +12,14 @@ public class CheckPosition : MonoBehaviour
         {
             cell = collision.GetComponent<Cell>();
             if (cell.CageForWalking) CanGo = true;
-           // else Debug.Log("The cell is busy");
+            // else Debug.Log("The cell is busy");
         }
     }
 
     public void ResetCanGo()
     {
         CanGo = false;
+        cell = null;
     }
 
     public Cell GetCell()
